@@ -21,6 +21,11 @@ type throwDirection = {
 export class Player extends GameObject {
 	static DEFAULT_SIZE = 50;
 
+	initialPosition = {
+		x: this.x,
+		y: this.y
+	};
+
 	color: string;
 	controls: Controls;
 	playArea: PlayArea;
@@ -166,5 +171,14 @@ export class Player extends GameObject {
 			context.fillStyle = this.color;
 		}
 		context.fillRect(this.x, this.y, this.width, this.height);
+	}
+
+	reset() {
+		this.x = this.initialPosition.x;
+		this.y = this.initialPosition.y;
+		this.isDead = false;
+		this.xVelocity = 0;
+		this.yVelocity = 0;
+		this.holdingBall = null;
 	}
 }

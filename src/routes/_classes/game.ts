@@ -11,7 +11,16 @@ export class Game {
 	};
 	players: Player[] = [];
 	ball: Ball;
-	countDown: number = 3;
+	countDown: number = 0;
+	eventListeners: {
+		keydown: (event: KeyboardEvent) => void;
+	} = {
+		keydown: (event) => {
+			if (event.key === 'r') {
+				this.reset();
+			}
+		}
+	};
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
@@ -69,6 +78,8 @@ export class Game {
 			x: this.canvas.width / 2 - Ball.DEFAULT_SIZE / 2,
 			y: this.canvas.height / 2 - Ball.DEFAULT_SIZE / 2
 		});
+
+		this.render();
 	}
 
 	get context() {
@@ -77,12 +88,21 @@ export class Game {
 
 	start() {
 		this.startCountDown();
+		window.addEventListener('keydown', this.eventListeners.keydown);
+
 		this.players.forEach((player) => player.addKeyboardListeners());
 		this.run();
 	}
 
 	stop() {
 		this.players.forEach((player) => player.removeKeyboardListeners());
+		window.removeEventListener('keydown', this.eventListeners.keydown);
+	}
+
+	reset() {
+		this.players.forEach((player) => player.reset());
+		this.ball.reset();
+		this.startCountDown();
 	}
 
 	private startCountDown() {
@@ -127,21 +147,14 @@ export class Game {
 		this.ball.render(this.context);
 
 		if (this.countDown > 0) {
-			this.context.fillStyle = 'white';
-			this.context.font = '96px sans-serif';
-			this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
-			this.context.fillText(
-				`Starting in ${this.countDown}`,
-				this.canvas.width / 2 - 250,
-				this.canvas.height / 2 - 150
-			);
-			this.context.strokeStyle = '#d8d8d8';
-			this.context.lineWidth = 2;
-			this.context.strokeText(
-				`Starting in ${this.countDown}`,
-				this.canvas.width / 2 - 250,
-				this.canvas.height / 2 - 150
-			);
+			this.renderCountDown();
+		}
+
+		if (this.players.find((player) => player.isDead)) {
+			const winner = this.players.find((player) => !player.isDead);
+			if (winner) {
+				this.renderGameOver(winner.color);
+			}
 		}
 	}
 
@@ -166,5 +179,57 @@ export class Game {
 		this.context.moveTo(this.field.x + this.field.width / 2, this.field.y);
 		this.context.lineTo(this.field.x + this.field.width / 2, this.field.y + this.field.height);
 		this.context.stroke();
+	}
+
+	private renderCountDown() {
+		this.context.fillStyle = 'white';
+		this.context.font = '96px sans-serif';
+		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
+		this.context.fillText(
+			`Starting in ${this.countDown}`,
+			this.canvas.width / 2 - 250,
+			this.canvas.height / 2 - 150
+		);
+		this.context.strokeStyle = '#d8d8d8';
+		this.context.lineWidth = 2;
+		this.context.strokeText(
+			`Starting in ${this.countDown}`,
+			this.canvas.width / 2 - 250,
+			this.canvas.height / 2 - 150
+		);
+	}
+
+	private renderGameOver(winnerColor: string) {
+		const playerName = winnerColor[0].toUpperCase() + winnerColor.slice(1);
+
+		this.context.font = '96px sans-serif';
+		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
+		this.context.fillText(
+			`${playerName} Wins!`,
+			this.canvas.width / 2 - 225,
+			this.canvas.height / 2 - 150
+		);
+		this.context.strokeStyle = winnerColor;
+		this.context.lineWidth = 2;
+		this.context.strokeText(
+			`${playerName} Wins!`,
+			this.canvas.width / 2 - 225,
+			this.canvas.height / 2 - 150
+		);
+
+		this.context.font = '48px sans-serif';
+		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
+		this.context.fillText(
+			`Press R to Restart`,
+			this.canvas.width / 2 - 200,
+			this.canvas.height / 2 - 50
+		);
+		this.context.strokeStyle = '#555555';
+		this.context.lineWidth = 2;
+		this.context.strokeText(
+			`Press R to Restart`,
+			this.canvas.width / 2 - 200,
+			this.canvas.height / 2 - 50
+		);
 	}
 }

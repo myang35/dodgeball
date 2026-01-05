@@ -5,6 +5,10 @@ import type { Player } from './player';
 export class Ball extends GameObject {
 	static DEFAULT_SIZE = 50;
 
+	initialPosition = {
+		x: this.x,
+		y: this.y
+	};
 	container = {
 		top: this.game.field.y,
 		right: this.game.field.x + this.game.field.width,
@@ -87,6 +91,14 @@ export class Ball extends GameObject {
 		this.velocity.x += x;
 		this.velocity.y += y;
 		this.isThrown = true;
+	}
+
+	reset() {
+		this.x = this.initialPosition.x;
+		this.y = this.initialPosition.y;
+		this.velocity = { x: 0, y: 0 };
+		this.holdingPlayer = null;
+		this.isThrown = false;
 	}
 
 	isMoving(): boolean {
