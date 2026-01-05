@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
-	import { Game } from './_utils/game';
+	import { Game } from './_classes/game';
 
 	let gameRunning = $state(false);
 

@@ -1,3 +1,4 @@
+import { Ball } from './ball';
 import { Player } from './player';
 
 export class Game {
@@ -9,6 +10,7 @@ export class Game {
 		height: number;
 	};
 	players: Player[] = [];
+	ball: Ball;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
@@ -24,32 +26,48 @@ export class Game {
 
 		this.players.push(
 			new Player({
+				game: this,
 				x: this.field.x + 100,
 				y: this.field.y + this.field.height / 2 - Player.DEFAULT_SIZE / 2,
 				color: 'red',
-				controls: { up: 'w', down: 's', left: 'a', right: 'd' },
-				container: {
+				controls: { up: 'w', down: 's', left: 'a', right: 'd', throw: ' ' },
+				playArea: {
 					top: this.field.y,
 					right: this.field.x + this.field.width / 2 - 2,
 					bottom: this.field.y + this.field.height,
 					left: this.field.x
-				}
+				},
+				throwDirection: { x: 1, y: 0 }
 			})
 		);
 		this.players.push(
 			new Player({
+				game: this,
 				x: this.field.x + this.field.width - 100 - Player.DEFAULT_SIZE,
 				y: this.field.y + this.field.height / 2 - Player.DEFAULT_SIZE / 2,
 				color: 'blue',
-				controls: { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' },
-				container: {
+				controls: {
+					up: 'ArrowUp',
+					down: 'ArrowDown',
+					left: 'ArrowLeft',
+					right: 'ArrowRight',
+					throw: '0'
+				},
+				playArea: {
 					top: this.field.y,
 					right: this.field.x + this.field.width,
 					bottom: this.field.y + this.field.height,
 					left: this.field.x + this.field.width / 2 + 2
-				}
+				},
+				throwDirection: { x: -1, y: 0 }
 			})
 		);
+
+		this.ball = new Ball({
+			game: this,
+			x: this.canvas.width / 2 - Ball.DEFAULT_SIZE / 2,
+			y: this.canvas.height / 2 - Ball.DEFAULT_SIZE / 2
+		});
 	}
 
 	get context() {
@@ -57,12 +75,12 @@ export class Game {
 	}
 
 	start() {
-		this.players.forEach((player) => player.start());
+		this.players.forEach((player) => player.addKeyboardListeners());
 		this.run();
 	}
 
 	stop() {
-		this.players.forEach((player) => player.stop());
+		this.players.forEach((player) => player.removeKeyboardListeners());
 	}
 
 	private run(currentTime: number = 0, lastTime: number = 0) {
@@ -85,12 +103,14 @@ export class Game {
 
 	private update(deltaTime: number) {
 		this.players.forEach((player) => player.update(deltaTime));
+		this.ball.update(deltaTime);
 	}
 
 	private render() {
 		this.renderBackground();
 		this.renderField();
 		this.players.forEach((player) => player.render(this.context));
+		this.ball.render(this.context);
 
 		// this.context.fillStyle = 'white';
 		// this.context.font = '48px sans-serif';
@@ -114,6 +134,7 @@ export class Game {
 			this.field.width + 4,
 			this.field.height + 4
 		);
+		this.context.beginPath();
 		this.context.moveTo(this.field.x + this.field.width / 2, this.field.y);
 		this.context.lineTo(this.field.x + this.field.width / 2, this.field.y + this.field.height);
 		this.context.stroke();
