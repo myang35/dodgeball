@@ -15,7 +15,8 @@ export class Ball extends GameObject {
 		x: 0,
 		y: 0
 	};
-	drag = 0.005; // 0-100 percentage
+	drag = 0.008; // 0-1 percentage
+	wallFriction = 0.5; // 0-1 percentage
 	color: string = '#dddddd';
 	holdingPlayer: Player | null = null;
 	isThrown: boolean = false;
@@ -39,19 +40,19 @@ export class Ball extends GameObject {
 
 		if (this.x <= this.container.left) {
 			this.x = this.container.left;
-			this.velocity.x = -this.velocity.x;
+			this.velocity.x = -this.velocity.x * (1 - this.wallFriction);
 		}
 		if (this.x + this.width >= this.container.right) {
 			this.x = this.container.right - this.width;
-			this.velocity.x = -this.velocity.x;
+			this.velocity.x = -this.velocity.x * (1 - this.wallFriction);
 		}
 		if (this.y <= this.container.top) {
 			this.y = this.container.top;
-			this.velocity.y = -this.velocity.y;
+			this.velocity.y = -this.velocity.y * (1 - this.wallFriction);
 		}
 		if (this.y + this.height >= this.container.bottom) {
 			this.y = this.container.bottom - this.height;
-			this.velocity.y = -this.velocity.y;
+			this.velocity.y = -this.velocity.y * (1 - this.wallFriction);
 		}
 
 		if (this.holdingPlayer) {

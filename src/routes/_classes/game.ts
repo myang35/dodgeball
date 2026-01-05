@@ -11,6 +11,7 @@ export class Game {
 	};
 	players: Player[] = [];
 	ball: Ball;
+	countDown: number = 3;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
@@ -51,7 +52,7 @@ export class Game {
 					down: 'ArrowDown',
 					left: 'ArrowLeft',
 					right: 'ArrowRight',
-					throw: '0'
+					throw: 'Enter'
 				},
 				playArea: {
 					top: this.field.y,
@@ -75,12 +76,23 @@ export class Game {
 	}
 
 	start() {
+		this.startCountDown();
 		this.players.forEach((player) => player.addKeyboardListeners());
 		this.run();
 	}
 
 	stop() {
 		this.players.forEach((player) => player.removeKeyboardListeners());
+	}
+
+	private startCountDown() {
+		this.countDown = 3;
+		const interval = setInterval(() => {
+			this.countDown -= 1;
+			if (this.countDown <= 0) {
+				clearInterval(interval);
+			}
+		}, 1000);
 	}
 
 	private run(currentTime: number = 0, lastTime: number = 0) {
@@ -95,7 +107,9 @@ export class Game {
 
 		const deltaTime = (currentTime - lastTime) / 1000;
 
-		this.update(deltaTime);
+		if (this.countDown <= 0) {
+			this.update(deltaTime);
+		}
 		this.render();
 
 		window.requestAnimationFrame((newTime) => this.run(newTime, currentTime));
@@ -112,9 +126,23 @@ export class Game {
 		this.players.forEach((player) => player.render(this.context));
 		this.ball.render(this.context);
 
-		// this.context.fillStyle = 'white';
-		// this.context.font = '48px sans-serif';
-		// this.context.fillText('Hello, Svelte!', 50, 100);
+		if (this.countDown > 0) {
+			this.context.fillStyle = 'white';
+			this.context.font = '96px sans-serif';
+			this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
+			this.context.fillText(
+				`Starting in ${this.countDown}`,
+				this.canvas.width / 2 - 250,
+				this.canvas.height / 2 - 150
+			);
+			this.context.strokeStyle = '#d8d8d8';
+			this.context.lineWidth = 2;
+			this.context.strokeText(
+				`Starting in ${this.countDown}`,
+				this.canvas.width / 2 - 250,
+				this.canvas.height / 2 - 150
+			);
+		}
 	}
 
 	private renderBackground() {

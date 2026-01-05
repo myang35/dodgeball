@@ -25,13 +25,13 @@ export class Player extends GameObject {
 	controls: Controls;
 	playArea: PlayArea;
 	throwDirection: throwDirection;
+	throwPower: number;
 	speed: number = 50;
 	maxVelocity: number = 800;
 	xVelocity: number = 0;
 	yVelocity: number = 0;
 	drag: number = 0.05; // 0-100 percentage
 	holdingBall: Ball | null = null;
-	throwPower: number = 400;
 	isDead: boolean = false;
 	keys = {
 		up: {
@@ -72,6 +72,7 @@ export class Player extends GameObject {
 		this.controls = params.controls;
 		this.playArea = params.playArea;
 		this.throwDirection = params.throwDirection;
+		this.throwPower = this.game.field.width;
 		this.eventListeners = {
 			keydown: (event) => {
 				switch (event.key) {
