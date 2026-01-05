@@ -154,14 +154,16 @@ export class Player extends GameObject {
 		this.xVelocity *= clamp(1 - this.drag, 0, 1);
 		this.yVelocity *= clamp(1 - this.drag, 0, 1);
 
-		if (this.collidesWith(this.game.ball)) {
-			if (this.game.ball.isGrabbable()) {
-				this.holdingBall = this.game.ball;
-				this.game.ball.holdingPlayer = this;
-			} else if (this.game.ball.holdingPlayer !== this) {
-				this.isDead = true;
+		this.game.balls.forEach((ball) => {
+			if (this.collidesWith(ball)) {
+				if (ball.isGrabbable() && !this.holdingBall) {
+					this.holdingBall = ball;
+					ball.holdingPlayer = this;
+				} else if (!ball.isGrabbable() && ball.holdingPlayer !== this) {
+					this.isDead = true;
+				}
 			}
-		}
+		});
 	}
 
 	render(context: CanvasRenderingContext2D) {

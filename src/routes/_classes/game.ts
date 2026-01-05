@@ -10,7 +10,7 @@ export class Game {
 		height: number;
 	};
 	players: Player[] = [];
-	ball: Ball;
+	balls: Ball[] = [];
 	countDown: number = 0;
 	eventListeners: {
 		keydown: (event: KeyboardEvent) => void;
@@ -73,12 +73,23 @@ export class Game {
 			})
 		);
 
-		this.ball = new Ball({
-			game: this,
-			x: this.canvas.width / 2 - Ball.DEFAULT_SIZE / 2,
-			y: this.canvas.height / 2 - Ball.DEFAULT_SIZE / 2
-		});
-
+		this.balls.push(
+			new Ball({
+				game: this,
+				x: this.canvas.width * 0.5 - Ball.DEFAULT_SIZE * 0.5,
+				y: this.canvas.height * 0.25 - Ball.DEFAULT_SIZE * 0.5
+			}),
+			new Ball({
+				game: this,
+				x: this.canvas.width * 0.5 - Ball.DEFAULT_SIZE * 0.5,
+				y: this.canvas.height * 0.5 - Ball.DEFAULT_SIZE * 0.5
+			}),
+			new Ball({
+				game: this,
+				x: this.canvas.width * 0.5 - Ball.DEFAULT_SIZE * 0.5,
+				y: this.canvas.height * 0.75 - Ball.DEFAULT_SIZE * 0.5
+			})
+		);
 		this.render();
 	}
 
@@ -101,7 +112,7 @@ export class Game {
 
 	reset() {
 		this.players.forEach((player) => player.reset());
-		this.ball.reset();
+		this.balls.forEach((ball) => ball.reset());
 		this.startCountDown();
 	}
 
@@ -137,14 +148,14 @@ export class Game {
 
 	private update(deltaTime: number) {
 		this.players.forEach((player) => player.update(deltaTime));
-		this.ball.update(deltaTime);
+		this.balls.forEach((ball) => ball.update(deltaTime));
 	}
 
 	private render() {
 		this.renderBackground();
 		this.renderField();
 		this.players.forEach((player) => player.render(this.context));
-		this.ball.render(this.context);
+		this.balls.forEach((ball) => ball.render(this.context));
 
 		if (this.countDown > 0) {
 			this.renderCountDown();
