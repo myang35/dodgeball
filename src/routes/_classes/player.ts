@@ -80,6 +80,8 @@ export class Player extends GameObject {
 		this.throwPower = this.game.field.width;
 		this.eventListeners = {
 			keydown: (event) => {
+				if (this.isDead) return;
+
 				switch (event.key) {
 					case this.controls.up:
 						this.keys.up.isPressing = true;
