@@ -45,10 +45,12 @@ export class Ball extends GameObject {
 		if (this.x <= this.container.left) {
 			this.x = this.container.left;
 			this.velocity.x = -this.velocity.x * (1 - this.wallFriction);
+			this.setThrowable();
 		}
 		if (this.x + this.width >= this.container.right) {
 			this.x = this.container.right - this.width;
 			this.velocity.x = -this.velocity.x * (1 - this.wallFriction);
+			this.setThrowable();
 		}
 		if (this.y <= this.container.top) {
 			this.y = this.container.top;
@@ -63,11 +65,10 @@ export class Ball extends GameObject {
 			if (!this.isThrown) {
 				this.x = this.holdingPlayer.x + this.holdingPlayer.width / 2 - this.width / 2;
 				this.y = this.holdingPlayer.y + this.holdingPlayer.height / 2 - this.height / 2;
-			} else {
-				if (!this.isMoving()) {
-					this.holdingPlayer = null;
-					this.isThrown = false;
-				}
+			}
+		} else {
+			if (!this.isMoving()) {
+				this.setThrowable();
 			}
 		}
 	}
@@ -85,6 +86,16 @@ export class Ball extends GameObject {
 			context.strokeStyle = '#888888';
 		}
 		context.stroke();
+	}
+
+	setThrowable() {
+		this.holdingPlayer = null;
+		this.isThrown = false;
+	}
+
+	setPlayer(player: Player) {
+		this.holdingPlayer = player;
+		this.isThrown = false;
 	}
 
 	throw(x: number, y: number) {
@@ -108,9 +119,5 @@ export class Ball extends GameObject {
 			this.velocity.y > 100 ||
 			this.velocity.y < -100
 		);
-	}
-
-	isGrabbable(): boolean {
-		return !this.isMoving() && !this.holdingPlayer;
 	}
 }
