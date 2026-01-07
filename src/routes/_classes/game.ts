@@ -164,7 +164,10 @@ export class Game {
 		if (this.players.find((player) => player.isDead)) {
 			const winner = this.players.find((player) => !player.isDead);
 			if (winner) {
-				this.renderGameOver(winner.color);
+				const playerName = winner.color.charAt(0).toUpperCase() + winner.color.slice(1);
+				this.renderGameOver(`${playerName} wins`, winner.color);
+			} else {
+				this.renderGameOver('Tied', 'gray');
 			}
 		}
 	}
@@ -193,53 +196,41 @@ export class Game {
 	}
 
 	private renderCountDown() {
+		this.context.textAlign = 'center';
 		this.context.fillStyle = 'white';
 		this.context.font = '96px sans-serif';
 		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
 		this.context.fillText(
 			`Starting in ${this.countDown}`,
-			this.canvas.width / 2 - 250,
+			this.canvas.width / 2,
 			this.canvas.height / 2 - 150
 		);
 		this.context.strokeStyle = '#d8d8d8';
 		this.context.lineWidth = 2;
 		this.context.strokeText(
 			`Starting in ${this.countDown}`,
-			this.canvas.width / 2 - 250,
+			this.canvas.width / 2,
 			this.canvas.height / 2 - 150
 		);
 	}
 
-	private renderGameOver(winnerColor: string) {
-		const playerName = winnerColor[0].toUpperCase() + winnerColor.slice(1);
-
+	private renderGameOver(message: string, color: string) {
+		this.context.textAlign = 'center';
 		this.context.font = '96px sans-serif';
 		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
-		this.context.fillText(
-			`${playerName} Wins!`,
-			this.canvas.width / 2 - 225,
-			this.canvas.height / 2 - 150
-		);
-		this.context.strokeStyle = winnerColor;
+		this.context.fillText(`${message}`, this.canvas.width / 2, this.canvas.height / 2 - 150);
+		this.context.strokeStyle = color;
 		this.context.lineWidth = 2;
-		this.context.strokeText(
-			`${playerName} Wins!`,
-			this.canvas.width / 2 - 225,
-			this.canvas.height / 2 - 150
-		);
+		this.context.strokeText(`${message}`, this.canvas.width / 2, this.canvas.height / 2 - 150);
 
 		this.context.font = '48px sans-serif';
 		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
-		this.context.fillText(
-			`Press R to Restart`,
-			this.canvas.width / 2 - 200,
-			this.canvas.height / 2 - 50
-		);
+		this.context.fillText(`Press R to Restart`, this.canvas.width / 2, this.canvas.height / 2 - 50);
 		this.context.strokeStyle = '#555555';
 		this.context.lineWidth = 2;
 		this.context.strokeText(
 			`Press R to Restart`,
-			this.canvas.width / 2 - 200,
+			this.canvas.width / 2,
 			this.canvas.height / 2 - 50
 		);
 	}
