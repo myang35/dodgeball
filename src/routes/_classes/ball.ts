@@ -22,7 +22,7 @@ export class Ball extends GameObject {
 	drag = 0.008; // 0-1 percentage
 	wallFriction = 0.5; // 0-1 percentage
 	color: string = '#dddddd';
-	holdingPlayer: Player | null = null;
+	thrower: Player | null = null;
 	isThrown: boolean = false;
 
 	constructor(params: { game: Game; x: number; y: number }) {
@@ -45,12 +45,20 @@ export class Ball extends GameObject {
 		if (this.x <= this.container.left) {
 			this.x = this.container.left;
 			this.velocity.x = -this.velocity.x * (1 - this.wallFriction);
-			this.setThrowable();
+			if (!this.thrower) {
+				this.setThrowable();
+			} else if (!this.thrower.holdingBall) {
+				this.setThrowable();
+			}
 		}
 		if (this.x + this.width >= this.container.right) {
 			this.x = this.container.right - this.width;
 			this.velocity.x = -this.velocity.x * (1 - this.wallFriction);
-			this.setThrowable();
+			if (!this.thrower) {
+				this.setThrowable();
+			} else if (!this.thrower.holdingBall) {
+				this.setThrowable();
+			}
 		}
 		if (this.y <= this.container.top) {
 			this.y = this.container.top;
@@ -61,14 +69,14 @@ export class Ball extends GameObject {
 			this.velocity.y = -this.velocity.y * (1 - this.wallFriction);
 		}
 
-		if (this.holdingPlayer) {
+		if (this.thrower) {
 			if (!this.isThrown) {
-				this.x = this.holdingPlayer.x + this.holdingPlayer.width / 2 - this.width / 2;
-				this.y = this.holdingPlayer.y + this.holdingPlayer.height / 2 - this.height / 2;
-			}
-		} else {
-			if (!this.isMoving()) {
-				this.setThrowable();
+				this.x = this.thrower.x + this.thrower.width / 2 - this.width / 2;
+				this.y = this.thrower.y + this.thrower.height / 2 - this.height / 2;
+			} else {
+				if (!this.isMoving()) {
+					this.setThrowable();
+				}
 			}
 		}
 	}
@@ -80,8 +88,8 @@ export class Ball extends GameObject {
 		context.fill();
 
 		context.lineWidth = 4;
-		if (this.holdingPlayer) {
-			context.strokeStyle = this.holdingPlayer.color;
+		if (this.thrower) {
+			context.strokeStyle = this.thrower.color;
 		} else {
 			context.strokeStyle = '#888888';
 		}
@@ -89,12 +97,13 @@ export class Ball extends GameObject {
 	}
 
 	setThrowable() {
-		this.holdingPlayer = null;
+		this.thrower = null;
 		this.isThrown = false;
 	}
 
-	setPlayer(player: Player) {
-		this.holdingPlayer = player;
+	setThrower(thrower: Player) {
+		this.thrower = thrower;
+		this.thrower.holdingBall = this;
 		this.isThrown = false;
 	}
 
@@ -108,7 +117,7 @@ export class Ball extends GameObject {
 		this.x = this.initialPosition.x;
 		this.y = this.initialPosition.y;
 		this.velocity = { x: 0, y: 0 };
-		this.holdingPlayer = null;
+		this.thrower = null;
 		this.isThrown = false;
 	}
 

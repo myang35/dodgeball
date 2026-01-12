@@ -158,10 +158,9 @@ export class Player extends GameObject {
 
 		this.game.balls.forEach((ball) => {
 			if (this.collidesWith(ball)) {
-				if (!ball.holdingPlayer && !this.holdingBall) {
-					this.holdingBall = ball;
-					ball.setPlayer(this);
-				} else if (ball.holdingPlayer && ball.holdingPlayer !== this) {
+				if (!ball.thrower && !this.holdingBall) {
+					ball.setThrower(this);
+				} else if (ball.thrower && ball.thrower !== this) {
 					this.isDead = true;
 				}
 			}
