@@ -3,12 +3,6 @@ import { Player } from './player';
 
 export class Game {
 	canvas: HTMLCanvasElement;
-	field: {
-		x: number;
-		y: number;
-		width: number;
-		height: number;
-	};
 	players: Player[] = [];
 	balls: Ball[] = [];
 	countDown: number = 0;
@@ -24,28 +18,21 @@ export class Game {
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
-		this.canvas.width = window.innerWidth;
-		this.canvas.height = window.innerHeight;
-
-		this.field = {
-			x: this.canvas.width * 0.1,
-			y: this.canvas.height * 0.1,
-			width: this.canvas.width * 0.8,
-			height: this.canvas.height * 0.8
-		};
+		this.canvas.width = canvas.clientWidth;
+		this.canvas.height = canvas.clientHeight;
 
 		this.players.push(
 			new Player({
 				game: this,
-				x: this.field.x + 100,
-				y: this.field.y + this.field.height / 2 - Player.DEFAULT_SIZE / 2,
+				x: 100,
+				y: this.canvas.height / 2 - Player.DEFAULT_SIZE / 2,
 				color: 'red',
 				controls: { up: 'w', down: 's', left: 'a', right: 'd', throw: ' ' },
 				playArea: {
-					top: this.field.y,
-					right: this.field.x + this.field.width / 2 - 2,
-					bottom: this.field.y + this.field.height,
-					left: this.field.x
+					top: 0,
+					right: this.canvas.width / 2 - 2,
+					bottom: this.canvas.height,
+					left: 0
 				},
 				throwDirection: { x: 1, y: 0 }
 			})
@@ -53,8 +40,8 @@ export class Game {
 		this.players.push(
 			new Player({
 				game: this,
-				x: this.field.x + this.field.width - 100 - Player.DEFAULT_SIZE,
-				y: this.field.y + this.field.height / 2 - Player.DEFAULT_SIZE / 2,
+				x: this.canvas.width - 100 - Player.DEFAULT_SIZE,
+				y: this.canvas.height / 2 - Player.DEFAULT_SIZE / 2,
 				color: 'blue',
 				controls: {
 					up: 'ArrowUp',
@@ -64,10 +51,10 @@ export class Game {
 					throw: 'Enter'
 				},
 				playArea: {
-					top: this.field.y,
-					right: this.field.x + this.field.width,
-					bottom: this.field.y + this.field.height,
-					left: this.field.x + this.field.width / 2 + 2
+					top: 0,
+					right: this.canvas.width,
+					bottom: this.canvas.height,
+					left: this.canvas.width / 2 + 2
 				},
 				throwDirection: { x: -1, y: 0 }
 			})
@@ -179,19 +166,14 @@ export class Game {
 
 	private renderField() {
 		this.context.fillStyle = '#101828';
-		this.context.fillRect(this.field.x, this.field.y, this.field.width, this.field.height);
+		this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 		this.context.strokeStyle = '#374151';
 		this.context.lineWidth = 4;
-		this.context.strokeRect(
-			this.field.x - 2,
-			this.field.y - 2,
-			this.field.width + 4,
-			this.field.height + 4
-		);
+		this.context.strokeRect(2, 2, this.canvas.width - 2, this.canvas.height - 2);
 		this.context.beginPath();
-		this.context.moveTo(this.field.x + this.field.width / 2, this.field.y);
-		this.context.lineTo(this.field.x + this.field.width / 2, this.field.y + this.field.height);
+		this.context.moveTo(this.canvas.width / 2, 0);
+		this.context.lineTo(this.canvas.width / 2, this.canvas.height);
 		this.context.stroke();
 	}
 
@@ -200,38 +182,26 @@ export class Game {
 		this.context.fillStyle = 'white';
 		this.context.font = '96px sans-serif';
 		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
-		this.context.fillText(
-			`Starting in ${this.countDown}`,
-			this.canvas.width / 2,
-			this.canvas.height / 2 - 150
-		);
+		this.context.fillText(`Starting in ${this.countDown}`, this.canvas.width / 2, 100);
 		this.context.strokeStyle = '#d8d8d8';
 		this.context.lineWidth = 2;
-		this.context.strokeText(
-			`Starting in ${this.countDown}`,
-			this.canvas.width / 2,
-			this.canvas.height / 2 - 150
-		);
+		this.context.strokeText(`Starting in ${this.countDown}`, this.canvas.width / 2, 100);
 	}
 
 	private renderGameOver(message: string, color: string) {
 		this.context.textAlign = 'center';
 		this.context.font = '96px sans-serif';
 		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
-		this.context.fillText(`${message}`, this.canvas.width / 2, this.canvas.height / 2 - 150);
+		this.context.fillText(`${message}`, this.canvas.width / 2, 100);
 		this.context.strokeStyle = color;
 		this.context.lineWidth = 2;
-		this.context.strokeText(`${message}`, this.canvas.width / 2, this.canvas.height / 2 - 150);
+		this.context.strokeText(`${message}`, this.canvas.width / 2, 100);
 
 		this.context.font = '48px sans-serif';
 		this.context.fillStyle = 'rgba(230, 230, 230, 0.9)';
-		this.context.fillText(`Press R to Restart`, this.canvas.width / 2, this.canvas.height / 2 - 50);
+		this.context.fillText(`Press R to Restart`, this.canvas.width / 2, 175);
 		this.context.strokeStyle = '#555555';
 		this.context.lineWidth = 2;
-		this.context.strokeText(
-			`Press R to Restart`,
-			this.canvas.width / 2,
-			this.canvas.height / 2 - 50
-		);
+		this.context.strokeText(`Press R to Restart`, this.canvas.width / 2, 175);
 	}
 }

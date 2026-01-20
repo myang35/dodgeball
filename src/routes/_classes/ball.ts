@@ -10,10 +10,10 @@ export class Ball extends GameObject {
 		y: this.y
 	};
 	container = {
-		top: this.game.field.y,
-		right: this.game.field.x + this.game.field.width,
-		bottom: this.game.field.y + this.game.field.height,
-		left: this.game.field.x
+		top: 0,
+		right: this.game.canvas.width,
+		bottom: this.game.canvas.height,
+		left: 0
 	};
 	velocity = {
 		x: 0,

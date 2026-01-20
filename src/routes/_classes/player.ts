@@ -77,7 +77,7 @@ export class Player extends GameObject {
 		this.controls = params.controls;
 		this.playArea = params.playArea;
 		this.throwDirection = params.throwDirection;
-		this.throwPower = this.game.field.width;
+		this.throwPower = this.game.canvas.width;
 		this.eventListeners = {
 			keydown: (event) => {
 				if (this.isDead) return;

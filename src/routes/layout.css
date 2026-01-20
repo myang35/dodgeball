@@ -1,9 +1,41 @@
 @import 'tailwindcss';
 
-body {
-	@apply bg-gray-900 text-gray-300;
+@theme {
+	--color-*: initial;
+
+	--color-bg-dark: oklch(0.1 0.025 264);
+	--color-bg: oklch(0.15 0.025 264);
+	--color-bg-light: oklch(0.2 0.025 264);
+
+	--color-text: oklch(0.96 0.05 264);
+	--color-text-muted: oklch(0.76 0.05 264);
+
+	--color-border: oklch(0.4 0.05 264);
+	--color-border-muted: oklch(0.3 0.05 264);
+
+	--color-primary: oklch(0.76 0.1 264);
+	--color-primary-light: oklch(0.81 0.1 264);
+	--color-primary-text: oklch(0.24 0.1 264);
+
+	--default-transition-duration: 200ms;
 }
 
-button {
-	@apply cursor-pointer;
+@layer base {
+	* {
+		@apply border-border;
+	}
+
+	body {
+		@apply bg-bg-dark text-text;
+	}
+
+	button {
+		@apply cursor-pointer;
+	}
+}
+
+@layer utilities {
+	.container {
+		@apply mx-auto px-4 sm:px-16;
+	}
 }
